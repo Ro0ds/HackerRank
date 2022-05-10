@@ -6,28 +6,43 @@ using System;
 
 namespace ConsoleApp11 {
     class Program {
-        public static StringBuilder sb = new StringBuilder();
-        public static Tuple<Int64, Int64> tuple;
+        public static string newTime, oldValue, newValue;
 
-        public static void miniMaxSum(List<int> arr) {
-            Int64 resMax = 0;
-            Int64 resMin = 0;
-            arr.Sort();
+        public static string timeConversion(string s) {
+            if (s.Contains("AM")) {
+                newTime = s.Remove(8, 2);
+                oldValue = s.Remove(2);
+                if(int.Parse(oldValue) > 10) {
+                    newValue = (int.Parse(oldValue) - 12).ToString();
+                }
+                else {
+                    newValue = oldValue;
+                }
+                
+                if(int.Parse(newValue) < 10 && newValue.Length == 1) {
+                    newValue = "0" + newValue;
+                }
 
-            for (int i = 1; i <= 4; i++) {
-                resMax += arr[i];
+                newTime = newTime.Replace($"{oldValue}", $"{newValue}");
+            }
+            else if (s.Contains("PM")) {
+                newTime = s.Remove(8, 2);
+                oldValue = s.Remove(2);
+                if(oldValue != "12") {
+                    newValue = (int.Parse(oldValue) + 12).ToString();
+                }
+                else {
+                    newValue = oldValue;
+                }
+                
+                newTime = newTime.Replace($"{oldValue}", $"{newValue}");
             }
 
-            for (int i = 0; i < 4; i++) {
-                resMin += arr[i];
-            }
-            tuple = new Tuple<long, long>(resMin, resMax);
+            return newTime;
         }
 
         static void Main(string[] args) {
-            miniMaxSum(new List<int> {5,2,3,1,4});
-            sb.AppendLine(tuple.Item1 + " " + tuple.Item2);
-            Console.WriteLine(sb);
+            Console.WriteLine(timeConversion("12:45:54PM"));
         }
     }
 }
