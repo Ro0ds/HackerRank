@@ -1,46 +1,197 @@
-﻿using System.CodeDom.Compiler;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System;
+
+/*
+ * S - Split
+ * C - Combine
+ * ------------------
+ * M - Method
+ * C - Class
+ * V - Variable
+ */
 
 namespace ConsoleApp11 {
     class Program {
-        public static int maxScore, minScore, maxCount, minCount;
         public static StringBuilder sb = new StringBuilder();
-        public static List<int> result;
-        public static Tuple<int, int> tuple;
+        public static List<string> palavra = new List<string>();
 
-        public static List<int> breakingRecords(List<int> scores) {
-            maxScore = scores[0];
-            minScore = scores[0];
-            result = new List<int>(2);
+        public static void Main(string[] args) {
+            string linha;
 
-            for (int i = 1; i < scores.Count; i++) {
-                if(scores[i] > maxScore) {
-                    maxScore = scores[i];
-                    maxCount++;
-                }
-                else if(scores[i] < minScore) {
-                    minScore = scores[i];
-                    minCount++;
+            while ((linha = Console.ReadLine()) != null && linha != "") {
+                palavra.Add(linha);
+            }
+
+            foreach (string item in palavra) {
+                Console.WriteLine(Dividir(item));
+            }
+
+            //Console.WriteLine(Dividir(palavra.ToString()));
+        }
+
+        private static string Dividir(string entrada) {
+            string SeparaCategoria = entrada.Remove(4);
+            string PalavraBruta = string.Empty;
+            string Operacao = SeparaCategoria.Remove(1);
+            string Operando = SeparaCategoria.Remove(3).Last().ToString();
+            string RecolocaUpper;
+            string SemEspacos;
+            string[] ResultadoFinal;
+
+            // Split case (M, C, V)
+            if (Operacao == "S") {
+                switch (Operando) {
+                    case "M":
+                    case "C":
+                        for (int i = 0; i < entrada.Length; i++) {
+                            if (char.IsUpper(entrada[i]) || entrada[i] == ';') {
+                                PalavraBruta += string.Join(PalavraBruta, $" {entrada[i]}");
+                            }
+                            else {
+                                PalavraBruta += string.Join(PalavraBruta, entrada[i]);
+                            }
+                        }
+
+                        if (PalavraBruta.Contains("()")) {
+                            PalavraBruta = PalavraBruta.Remove(PalavraBruta.LastIndexOf("("), 2);
+                        }
+
+                        if (PalavraBruta.StartsWith(string.Empty)) {
+                            PalavraBruta = PalavraBruta.Remove(0, PalavraBruta.LastIndexOf(";") + 1);
+                            PalavraBruta = PalavraBruta.TrimStart(' ');
+                        }
+                        else {
+                            PalavraBruta = PalavraBruta.Remove(PalavraBruta.IndexOf(Operacao), PalavraBruta.LastIndexOf(";"));
+                        }
+
+                        sb.AppendLine(PalavraBruta.ToLower());
+                        break;
+
+                    case "V":
+                        for (int i = 0; i < entrada.Length; i++) {
+                            if (char.IsUpper(entrada[i])) {
+                                PalavraBruta += string.Join(PalavraBruta, $" {entrada[i]}");
+                            }
+                            else {
+                                PalavraBruta += string.Join(PalavraBruta, entrada[i]);
+                            }
+                        }
+
+                        if (PalavraBruta.Contains("()")) {
+                            PalavraBruta = PalavraBruta.Remove(PalavraBruta.LastIndexOf("("), 2);
+                        }
+
+                        if (PalavraBruta.StartsWith(string.Empty)) {
+                            PalavraBruta = PalavraBruta.Remove(0, PalavraBruta.LastIndexOf(";") + 1);
+                            PalavraBruta = PalavraBruta.TrimStart(' ');
+                        }
+                        else {
+                            PalavraBruta = PalavraBruta.Remove(PalavraBruta.IndexOf(Operacao), PalavraBruta.LastIndexOf(";"));
+                        }
+
+                        sb.AppendLine(PalavraBruta.ToLower());
+                        break;
                 }
             }
 
-            result.Add(maxCount);
-            result.Add(minCount);
+            // Combine case (M, C, V)
+            if (Operacao == "C") {
+                switch (Operando) {
+                    case "C":
+                        for (int i = 0; i < entrada.Length; i++) {
+                            if (char.IsWhiteSpace(entrada[i]) || entrada[i] == ';') {
+                                var regex = new Regex(Regex.Escape(entrada[i + 1].ToString()));
+                                RecolocaUpper = regex.Replace(entrada[i + 1].ToString(), entrada[i + 1].ToString().ToUpper(), 1);
 
-            tuple = new Tuple<int, int>(result[0], result[1]);
+                                PalavraBruta = regex.Replace(PalavraBruta, RecolocaUpper, 1);
+                            }
 
-            return result;
-        }
+                            if (!entrada.Contains("()")) {
+                                if (PalavraBruta == string.Empty) {
+                                    PalavraBruta = entrada;
+                                }
+                            }
 
-        static void Main(string[] args) {
-            Console.WriteLine(breakingRecords(new List<int> { 12, 24, 10, 24 }));
+                            if (PalavraBruta.StartsWith(string.Empty)) {
+                                PalavraBruta = PalavraBruta.Remove(0, PalavraBruta.LastIndexOf(";") + 1);
+                                PalavraBruta = PalavraBruta.TrimStart(' ');
+                            }
+                            else {
+                                PalavraBruta = PalavraBruta.Remove(PalavraBruta.IndexOf(Operacao), PalavraBruta.LastIndexOf(";"));
+                            }
+                        }
 
-            sb.Append(Program.tuple.Item1 + " " + Program.tuple.Item2);
+                        SemEspacos = Regex.Replace(PalavraBruta, @"\s+", "");
 
-            Console.WriteLine(sb);
+                        //Console.WriteLine(SemEspacos);
+                        sb.AppendLine(SemEspacos);
+                        break;
+
+                    case "M":
+                        for (int i = 0; i < entrada.Length; i++) {
+                            if (char.IsWhiteSpace(entrada[i])) {
+                                var regex = new Regex(Regex.Escape(entrada[i + 1].ToString()));
+                                RecolocaUpper = regex.Replace(entrada[i + 1].ToString(), entrada[i + 1].ToString().ToUpper(), 1);
+
+                                PalavraBruta = regex.Replace(PalavraBruta, RecolocaUpper, 1);
+                            }
+
+                            if (!entrada.Contains("()")) {
+                                entrada += string.Join("(", "()");
+                                PalavraBruta += entrada;
+                            }
+
+                            if (PalavraBruta.StartsWith(string.Empty)) {
+                                PalavraBruta = PalavraBruta.Remove(0, PalavraBruta.LastIndexOf(";") + 1);
+                                PalavraBruta = PalavraBruta.TrimStart(' ');
+                            }
+                            else {
+                                PalavraBruta = PalavraBruta.Remove(PalavraBruta.IndexOf(Operacao), PalavraBruta.LastIndexOf(";"));
+                            }
+                        }
+
+                        SemEspacos = Regex.Replace(PalavraBruta, @"\s+", "");
+
+                        //Console.WriteLine(SemEspacos);
+                        sb.AppendLine(SemEspacos);
+                        break;
+
+                    case "V":
+                        for (int i = 0; i < entrada.Length; i++) {
+                            if (char.IsWhiteSpace(entrada[i])) {
+                                var regex = new Regex(Regex.Escape(entrada[i + 1].ToString()));
+                                RecolocaUpper = regex.Replace(entrada[i + 1].ToString(), entrada[i + 1].ToString().ToUpper(), 1);
+
+                                PalavraBruta = regex.Replace(PalavraBruta, RecolocaUpper, 1);
+                            }
+
+                            if (!entrada.Contains("()")) {
+                                if (PalavraBruta == string.Empty) {
+                                    PalavraBruta = entrada;
+                                }
+                            }
+
+                            if (PalavraBruta.StartsWith(string.Empty)) {
+                                PalavraBruta = PalavraBruta.Remove(0, PalavraBruta.LastIndexOf(";") + 1);
+                                PalavraBruta = PalavraBruta.TrimStart(' ');
+                            }
+                            else {
+                                PalavraBruta = PalavraBruta.Remove(PalavraBruta.IndexOf(Operacao), PalavraBruta.LastIndexOf(";"));
+                            }
+                        }
+
+                        SemEspacos = Regex.Replace(PalavraBruta, @"\s+", "");
+
+                        //Console.WriteLine(SemEspacos);
+                        sb.AppendLine(SemEspacos);
+                        break;
+                }
+            }
+
+            return sb.ToString();
         }
     }
 }
