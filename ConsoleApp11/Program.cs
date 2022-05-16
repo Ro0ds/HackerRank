@@ -1,191 +1,25 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using System;
-
-/*
- * S - Split
- * C - Combine
- * ------------------
- * M - Method
- * C - Class
- * V - Variable
- */
 
 namespace ConsoleApp11 {
     class Program {
-        public static StringBuilder sb = new StringBuilder();
-        public static List<string> palavra = new List<string>();
-
+        public static int count = 0;
         public static void Main(string[] args) {
-            string linha;
+            Console.WriteLine(divisibleSumPairs(100, 66, new List<int> { 50, 44, 77, 66, 70, 58, 9, 59, 74, 82, 87, 15, 10, 95, 10, 81, 2, 4, 87, 85, 28, 96, 76, 18, 86, 91, 94, 59, 19, 58, 98, 48, 38, 70, 36, 38, 66, 9, 72, 54, 23, 23, 17, 18, 8, 16, 9, 56, 12, 59, 73, 31, 10, 62, 83, 84, 28, 91, 29, 22, 73, 22, 3, 75, 26, 31, 93, 57, 15, 32, 46, 74, 99, 10, 15, 58, 60, 53, 41, 49, 71, 59, 4, 20, 38, 78, 1, 94, 76, 5, 70, 68, 42, 34, 77, 28, 19, 25, 20, 15 }));
 
-            while ((linha = Console.ReadLine()) != null && linha != "") {
-                palavra.Add(linha);
-            }
-
-            foreach (string item in palavra) {
-                Dividir(item.TrimEnd());
-            }
-
-            Console.WriteLine(sb.ToString());
         }
 
-        private static string Dividir(string entrada) {
-            string SeparaCategoria = entrada.Remove(4);
-            string PalavraBruta = string.Empty;
-            string Operacao = SeparaCategoria.Remove(1);
-            string Operando = SeparaCategoria.Remove(3).Last().ToString();
-            string RecolocaUpper;
-            string SemEspacos;
+        public static int divisibleSumPairs(int n, int k, List<int> ar) {
+            int count = 0;
 
-            // Split case (M, C, V)
-            if (Operacao == "S") {
-                switch (Operando) {
-                    case "M":
-                    case "C":
-                        for (int i = 0; i < entrada.Length; i++) {
-                            if (char.IsUpper(entrada[i]) || entrada[i] == ';') {
-                                PalavraBruta += string.Join(PalavraBruta, $" {entrada[i]}");
-                            }
-                            else {
-                                PalavraBruta += string.Join(PalavraBruta, entrada[i]);
-                            }
-                        }
-
-                        if (PalavraBruta.Contains("()")) {
-                            PalavraBruta = PalavraBruta.Remove(PalavraBruta.LastIndexOf("("), 2);
-                        }
-
-                        if (PalavraBruta.StartsWith(string.Empty)) {
-                            PalavraBruta = PalavraBruta.Remove(0, PalavraBruta.LastIndexOf(";") + 1);
-                            PalavraBruta = PalavraBruta.TrimStart(' ');
-                        }
-                        else {
-                            PalavraBruta = PalavraBruta.Remove(PalavraBruta.IndexOf(Operacao), PalavraBruta.LastIndexOf(";"));
-                        }
-
-                        sb.AppendLine(PalavraBruta.ToLower());
-                        break;
-
-                    case "V":
-                        for (int i = 0; i < entrada.Length; i++) {
-                            if (char.IsUpper(entrada[i])) {
-                                PalavraBruta += string.Join(PalavraBruta, $" {entrada[i]}");
-                            }
-                            else {
-                                PalavraBruta += string.Join(PalavraBruta, entrada[i]);
-                            }
-                        }
-
-                        if (PalavraBruta.Contains("()")) {
-                            PalavraBruta = PalavraBruta.Remove(PalavraBruta.LastIndexOf("("), 2);
-                        }
-
-                        if (PalavraBruta.StartsWith(string.Empty)) {
-                            PalavraBruta = PalavraBruta.Remove(0, PalavraBruta.LastIndexOf(";") + 1);
-                            PalavraBruta = PalavraBruta.TrimStart(' ');
-                        }
-                        else {
-                            PalavraBruta = PalavraBruta.Remove(PalavraBruta.IndexOf(Operacao), PalavraBruta.LastIndexOf(";"));
-                        }
-
-                        sb.AppendLine(PalavraBruta.ToLower());
-                        break;
+            for (int index = 0; index < n; index++) {
+                for (int next = index + 1; next < n; next++) {
+                    if ((ar[index] + ar[next]) % k == 0) {
+                        count++;
+                    }
                 }
             }
-
-            // Combine case (M, C, V)
-            if (Operacao == "C") {
-                switch (Operando) {
-                    case "C":
-                        for (int i = 0; i < entrada.Length; i++) {
-                            if (char.IsWhiteSpace(entrada[i]) || entrada[i] == ';') {
-                                var regex = new Regex(Regex.Escape(entrada[i + 1].ToString()));
-                                RecolocaUpper = regex.Replace(entrada[i + 1].ToString(), entrada[i + 1].ToString().ToUpper(), 1);
-
-                                PalavraBruta = regex.Replace(PalavraBruta, RecolocaUpper, 1);
-                            }
-
-                            if (!entrada.Contains("()")) {
-                                if (PalavraBruta == string.Empty) {
-                                    PalavraBruta = entrada;
-                                }
-                            }
-
-                            if (PalavraBruta.StartsWith(string.Empty)) {
-                                PalavraBruta = PalavraBruta.Remove(0, PalavraBruta.LastIndexOf(";") + 1);
-                                PalavraBruta = PalavraBruta.TrimStart(' ');
-                            }
-                            else {
-                                PalavraBruta = PalavraBruta.Remove(PalavraBruta.IndexOf(Operacao), PalavraBruta.LastIndexOf(";"));
-                            }
-                        }
-
-                        SemEspacos = Regex.Replace(PalavraBruta, @"\s+", "");
-
-                        sb.AppendLine(SemEspacos);
-                        break;
-
-                    case "M":
-                        for (int i = 0; i < entrada.Length; i++) {
-                            if (char.IsWhiteSpace(entrada[i])) {
-                                var regex = new Regex(Regex.Escape(entrada[i + 1].ToString()));
-                                RecolocaUpper = regex.Replace(entrada[i + 1].ToString(), entrada[i + 1].ToString().ToUpper(), 1);
-
-                                PalavraBruta = regex.Replace(PalavraBruta, RecolocaUpper, 1);
-                            }
-
-                            if (!entrada.Contains("()")) {
-                                entrada += string.Join("(", "()");
-                                PalavraBruta += entrada;
-                            }
-
-                            if (PalavraBruta.StartsWith(string.Empty)) {
-                                PalavraBruta = PalavraBruta.Remove(0, PalavraBruta.LastIndexOf(";") + 1);
-                                PalavraBruta = PalavraBruta.TrimStart(' ');
-                            }
-                            else {
-                                PalavraBruta = PalavraBruta.Remove(PalavraBruta.IndexOf(Operacao), PalavraBruta.LastIndexOf(";"));
-                            }
-                        }
-
-                        SemEspacos = Regex.Replace(PalavraBruta, @"\s+", "");
-
-                        sb.AppendLine(SemEspacos);
-                        break;
-
-                    case "V":
-                        if (!entrada.Contains("()")) {
-                            if (PalavraBruta == string.Empty) {
-                                PalavraBruta = entrada;
-                            }
-                        }
-
-                        for (int i = 0; i < PalavraBruta.Length; i++) {
-                            if (char.IsWhiteSpace(PalavraBruta[i])) {
-                                var regex = new Regex(Regex.Escape(PalavraBruta[i + 1].ToString()));
-                                RecolocaUpper = regex.Replace(PalavraBruta[i + 1].ToString(), PalavraBruta[i + 1].ToString().ToUpper(), 1);
-
-                                int AjustaIndex = i + 1;
-
-                                PalavraBruta = PalavraBruta.Remove(AjustaIndex, 1).Insert(AjustaIndex, RecolocaUpper);
-                            }
-
-                            if (PalavraBruta.StartsWith(string.Empty) && PalavraBruta.Contains(";")) {
-                                PalavraBruta = PalavraBruta.Remove(0, PalavraBruta.LastIndexOf(";") + 1);
-                                PalavraBruta = PalavraBruta.TrimStart(' ');
-                            }
-                        }
-
-                        SemEspacos = Regex.Replace(PalavraBruta, @"\s+", string.Empty);
-
-                        sb.AppendLine(SemEspacos);
-                        break;
-                }
-            }
-            return sb.ToString();
+            return count;
         }
     }
 }
