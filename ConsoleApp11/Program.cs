@@ -4,23 +4,27 @@ using System.Text;
 
 namespace ConsoleApp11 {
     class Program {
-        public static List<int> result = new List<int>();
         public static StringBuilder sb = new StringBuilder();
-        public static int count;
         public static void Main(string[] args) {
+            findMedian(new List<int> { 0, 1, 2, 4, 5, 6, 3 });
 
+            Console.WriteLine(sb);
         }
 
-        public static List<int> matchingStrings(List<string> strings, List<string> queries) {
-            for (int i = 0; i < queries.Count; i++) {
-                for (int j = 0; j < strings.Count; j++) {
-                    if (queries[i].Equals(strings[j])) {
-                        count++;
-                    }
-                }
-                result.Add(count);
-                count = 0;
+        public static int findMedian(List<int> arr) {
+            arr.Sort();
+            int median = arr.Count / 2;
+            int result = 0;
+            List<int> res = new List<int>();
+
+            res.Add(arr[median]);
+
+            foreach (var item in res) {
+                result = item;
             }
+
+            sb.Append(result.ToString());
+
             return result;
         }
     }
