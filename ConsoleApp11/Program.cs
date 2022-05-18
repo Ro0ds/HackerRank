@@ -1,31 +1,26 @@
 ﻿using System.Collections.Generic;
 using System;
 using System.Text;
+using System.Linq;
 
 namespace ConsoleApp11 {
     class Program {
         public static StringBuilder sb = new StringBuilder();
         public static void Main(string[] args) {
-            findMedian(new List<int> { 0, 1, 2, 4, 5, 6, 3 });
-
+            lonelyinteger(new List<int> { 1,2,3,4,3,2,1 });
             Console.WriteLine(sb);
         }
 
-        public static int findMedian(List<int> arr) {
-            arr.Sort();
-            int median = arr.Count / 2;
-            int result = 0;
-            List<int> res = new List<int>();
+        public static int lonelyinteger(List<int> a) {
+            var result = a.GroupBy(x => x).Where(g => g.Count() < 2).Select(y => y.Key).ToList();
+            int final = 0;
 
-            res.Add(arr[median]);
-
-            foreach (var item in res) {
-                result = item;
+            foreach(var item in result) {
+                final = item;
             }
 
-            sb.Append(result.ToString());
-
-            return result;
+            sb.Append(final);
+            return final;
         }
     }
 }
