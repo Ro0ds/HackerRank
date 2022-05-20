@@ -6,55 +6,58 @@ using System.Linq;
 namespace ConsoleApp11 {
     class Program {
         public static StringBuilder sb = new StringBuilder();
-        public static void Main(string[] args) {
-            gradingStudents(new List<int> { 4,73,67,38,33 });
 
-            Console.WriteLine(sb);
+        public static void Main(string[] args) {
+            int q = Convert.ToInt32(Console.ReadLine().Trim());
+            long result;
+
+            for (int qItr = 0; qItr <= q; qItr++) {
+                long n = Convert.ToInt64(Console.ReadLine().Trim());
+
+                result = flippingBits(n);
+
+                Console.WriteLine(result);
+            }
         }
 
-        public static List<int> gradingStudents(List<int> grades) {
-            List<int> res = new List<int>();
-            int oldGrade = 0;
-            int multGrade = 0;
-            int roundedGrade = 0;
+        public static long flippingBits(long n) { // 32bits
+            long BruteNumber = 0;
+            string ConvertedToBits = string.Empty;
+            string invertedBits = string.Empty;
+            string finalDecimal = string.Empty;
+            string restoDiv = string.Empty;
+            long getNumber = 0;
+            int baseBits = 32;
+            int count = 0;
 
-            for (int i = 1; i < grades.Count; i++) {
-                if(grades[i] < 35) {
-                    res.Add(grades[i]);
+            BruteNumber = n;
+            getNumber = BruteNumber;
+
+            ConvertedToBits = Convert.ToString(BruteNumber, 2);
+
+            do {
+                restoDiv += getNumber % 2;
+                getNumber /= 2;
+            } while (getNumber > 0);
+
+            count = baseBits - restoDiv.Length;
+
+            for (int i = 0; i < count; i++) {
+                ConvertedToBits = "0" + ConvertedToBits;
+            }
+
+            for (int i = 0; i < ConvertedToBits.Length; i++) {
+                if (ConvertedToBits.Substring(i, 1) == "0") {
+                    invertedBits += ConvertedToBits.Substring(i, 1).Replace("0", "1");
                 }
-                
-                if(grades[i] > 35) {
-                    oldGrade = grades[i];
-                    multGrade = oldGrade;
-
-                    while(multGrade % 5 != 0) {
-                        multGrade++;
-                    }
-
-                    if(multGrade - oldGrade < 3) {
-                        roundedGrade = multGrade;
-                    }
-                    else {
-                        roundedGrade = oldGrade;
-                    }
-
-                    res.Add(roundedGrade);
+                else {
+                    invertedBits += ConvertedToBits.Substring(i, 1).Replace("1", "0");
                 }
             }
 
-            int[] final = new int[res.Count];
+            finalDecimal = Convert.ToInt64(invertedBits, 2).ToString();
 
-            for(int i = 0; i < res.Count; i++) {
-                //foreach(int a in res) {
-                    final[i] = res[i];
-                //}
-            }
-
-            foreach (var item in final) {
-                sb.AppendLine($"{item}");
-            }
-
-            return final.ToList();
+            return Math.Abs(long.Parse(finalDecimal));
         }
     }
 }
