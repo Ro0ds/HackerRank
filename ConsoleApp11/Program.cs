@@ -6,58 +6,49 @@ using System.Linq;
 namespace ConsoleApp11 {
     class Program {
         public static StringBuilder sb = new StringBuilder();
+        public static int firstDiagSum = 0;
+        public static int secondDiagSum = 0;
+        public static int difference = 0;
 
         public static void Main(string[] args) {
-            int q = Convert.ToInt32(Console.ReadLine().Trim());
-            long result;
+            Console.Write("Linhas: ");
+            int n = Convert.ToInt32(Console.ReadLine().Trim());
 
-            for (int qItr = 0; qItr <= q; qItr++) {
-                long n = Convert.ToInt64(Console.ReadLine().Trim());
+            List<List<int>> arr = new List<List<int>>();
 
-                result = flippingBits(n);
-
-                Console.WriteLine(result);
+            for (int i = 0; i < n; i++) {
+                Console.WriteLine($"\nNúmero de itens: {n}");
+                Console.Write($"Item #{i}: ");
+                arr.Add(Console.ReadLine().TrimEnd().Split(' ').ToList().Select(arrTemp => Convert.ToInt32(arrTemp)).ToList());
             }
+
+            int result = diagonalDifference(arr);
+            Console.WriteLine(sb);
         }
 
-        public static long flippingBits(long n) { // 32bits
-            long BruteNumber = 0;
-            string ConvertedToBits = string.Empty;
-            string invertedBits = string.Empty;
-            string finalDecimal = string.Empty;
-            string restoDiv = string.Empty;
-            long getNumber = 0;
-            int baseBits = 32;
-            int count = 0;
-
-            BruteNumber = n;
-            getNumber = BruteNumber;
-
-            ConvertedToBits = Convert.ToString(BruteNumber, 2);
-
-            do {
-                restoDiv += getNumber % 2;
-                getNumber /= 2;
-            } while (getNumber > 0);
-
-            count = baseBits - restoDiv.Length;
-
-            for (int i = 0; i < count; i++) {
-                ConvertedToBits = "0" + ConvertedToBits;
-            }
-
-            for (int i = 0; i < ConvertedToBits.Length; i++) {
-                if (ConvertedToBits.Substring(i, 1) == "0") {
-                    invertedBits += ConvertedToBits.Substring(i, 1).Replace("0", "1");
-                }
-                else {
-                    invertedBits += ConvertedToBits.Substring(i, 1).Replace("1", "0");
+        public static int diagonalDifference(List<List<int>> arr) {
+            for (int i = 0; i < arr.Count; i++) {
+                for (int j = 0; j < arr.Count; j++) {
+                    if (arr.IndexOf(arr[i]) == arr.IndexOf(arr[j])) {
+                        firstDiagSum += arr[i][j];
+                    }
                 }
             }
 
-            finalDecimal = Convert.ToInt64(invertedBits, 2).ToString();
+            arr.Reverse();
 
-            return Math.Abs(long.Parse(finalDecimal));
+            for (int i = 0; i < arr.Count; i++) {
+                for (int j = 0; j < arr.Count; j++) {
+                    if (arr.IndexOf(arr[i]) == arr.IndexOf(arr[j])) {
+                        secondDiagSum += arr[i][j];
+                    }
+                }
+            }
+
+            difference = firstDiagSum - secondDiagSum;
+            sb.AppendLine($"\ndifference: {difference}");
+
+            return difference;
         }
     }
 }
