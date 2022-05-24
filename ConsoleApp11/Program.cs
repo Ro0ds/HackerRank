@@ -1,25 +1,29 @@
 ﻿using System;
 using System.Text;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace ConsoleApp11 {
     class Program {
         public static StringBuilder sb = new StringBuilder();
 
         public static void Main(string[] args) {
-            countingSort(new List<int> { 1, 1, 3, 2, 1 });
+            countingValleys(8, "UDDDUDUU");
         }
 
-        public static List<int> countingSort(List<int> arr) {
-            int[] range = new int[100];
-
-            foreach (int item in arr) {
-                range[item]++;
+        public static int countingValleys(int steps, string path) {
+            int level = 0;
+            int valleys = 0;
+            for (int i = 0; i < steps; i++) {
+                if (path[i] == 'U') {
+                    level++;
+                }
+                else {
+                    level--;
+                }
+                if (level == 0 && path[i] == 'U') {
+                    valleys++;
+                }
             }
-
-            return range.ToList();
+            return valleys;
         }
-
     }
 }
